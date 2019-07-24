@@ -6,5 +6,6 @@
 
 *images must be JPG or PNG*
 
-This is just a small exploratory project
+This is just a small exploratory project.
+
 I edit photos quite a bit- this mostly came about from wanting to automate the process.

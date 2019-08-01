@@ -10,6 +10,8 @@
 
 * ***Images must be JPG or PNG!***
 
+* Works on both Linux and Windows!
+
 * *It will overwrite whatever is in output if run again, even with new input.*
 
 * It is set to use 4 processor cores to speed up the processing(since python only runs in 1 process normally)

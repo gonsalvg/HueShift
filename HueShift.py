@@ -1,10 +1,12 @@
+#Created by gonsalvg 2019
+
 from PIL import Image, ImageChops, ImageColor
 
 import os.path
 import numpy as np
 import colorsys
-#from random import randint
-
+import time
+import multiprocessing as mp
 
 rgb_to_hsv = np.vectorize(colorsys.rgb_to_hsv)
 hsv_to_rgb = np.vectorize(colorsys.hsv_to_rgb)
@@ -17,7 +19,7 @@ def shift_hue(arr, hout):
     arr = np.dstack((r, g, b, a))
     return arr
 
-def colorize(image, hue, itr, sub_itr):
+def worker(image, hue, itr, sub_itr):
     """
     Colorize PIL image `original` with the given
     `hue` (hue within 0-360); returns another PIL image.
@@ -34,51 +36,43 @@ def colorize(image, hue, itr, sub_itr):
     new_img = Image.fromarray(shift_hue(arr, hue/360.).astype('uint8'), 'RGBA')
     img2 = Image.blend(img2, new_img, .65)
     #img3 = Image.blend(img3, new_img, .2 )
-    
+
     img2.save("output/blend" + str(itr) + "_" + str(sub_itr) + "_1" + ".png")
     #img3.save("output/blend" + str(itr) + "_" + str(sub_itr) + "_2" + ".png")
+
     return
-    
-def tint_image(img, tint_color):
-    return Image.new("RGB", img.size, tint_color)
-    #return ImageChops.blend(img, tintimg, alpha=0.10)
 
+def processImages():
 
+    fileDir = os.getcwd()
+    filename = os.path.join(fileDir, 'wallpapers')
+    pool = mp.Pool(processes=4)
+    itr = 0
+    hue = 30
+    for root, dirs, files in os.walk(filename):
+        for file in files:
+            itr += 1
+            sub_itr = 1
+            hue = 30
 
-############# MAIN ###################
+            imgpath = root + os.sep + file
+            curImg = Image.open(imgpath)
 
-fileDir = os.getcwd()
+            filename = ("output/original" + str(itr) + ".png")
+            curImg.save(filename)
 
-
-filename = os.path.join(fileDir, 'wallpapers')
-
-itr = 0
-hue = 30
-for root, dirs, files in os.walk(filename):
-    for file in files:
-        itr += 1
-        sub_itr =1
-        #curImg = 
-        #print("test")
-        imgpath = root + os.sep + file
-        #print(imgpath)
-        curImg = Image.open(imgpath)
-        filename = ("output/original" + str(itr) +".png")
-        curImg.save(filename)
-        for sub_itr in range(1,13):
-                colorize(curImg, hue, itr, sub_itr)
+            for sub_itr in range(1, 13):
+                pool.apply_async(
+                worker, (curImg, hue, itr, sub_itr))
                 hue += 30
+
+        pool.close()
+        pool.join()
+        print("finished hue shifting " + str(itr) + " images!")
+        return
+
+if __name__ == '__main__':        
+        mp.set_start_method('spawn')
+
+        processImages()
         
-        hue = 30
-        
-        
-print("finished hue shifting " + str(itr) + " images!")
-
-
-
-
-
-
-
-
-

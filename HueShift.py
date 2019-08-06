@@ -1,6 +1,6 @@
 #Created by gonsalvg 2019
 
-from PIL import Image, ImageChops, ImageColor
+from PIL import Image
 
 import os.path
 import numpy as np
@@ -19,7 +19,7 @@ def shift_hue(arr, hout):
     arr = np.dstack((r, g, b, a))
     return arr
 
-def worker(image, hue, itr, sub_itr):
+def worker(image, hue, itr, subItr):
     """
     Colorize PIL image `original` with the given
     `hue` (hue within 0-360); returns another PIL image.
@@ -30,19 +30,19 @@ def worker(image, hue, itr, sub_itr):
     """
     img = image.convert('RGBA')
     img2 = image.convert('RGBA')
-    #img3 = image.convert('RGBA')
 
     arr = np.array(np.asarray(img).astype('float'))
     new_img = Image.fromarray(shift_hue(arr, hue/360.).astype('uint8'), 'RGBA')
-    img2 = Image.blend(img2, new_img, .65)
-    #img3 = Image.blend(img3, new_img, .2 )
+    img2 = Image.blend(img2, new_img, .50)
 
-    img2.save("output/blend" + str(itr) + "_" + str(sub_itr) + "_1" + ".png")
-    #img3.save("output/blend" + str(itr) + "_" + str(sub_itr) + "_2" + ".png")
+    img2.save("output/blend" + str(itr) + "_" + str(subItr) + ".png", optimize=True)
+    img3 = img2.convert('RGB')
+    img3.mode = 'RGB'
+    img3.save("output/blend" + str(itr) + "_" + str(subItr) + ".jpg", quality=95, optimize=True)
 
     return
 
-def processImages():
+def process_images():
 
     fileDir = os.getcwd()
     filename = os.path.join(fileDir, 'wallpapers')
@@ -52,18 +52,18 @@ def processImages():
     for root, dirs, files in os.walk(filename):
         for file in files:
             itr += 1
-            sub_itr = 1
+            subItr = 1
             hue = 30
 
             imgpath = root + os.sep + file
             curImg = Image.open(imgpath)
 
-            filename = ("output/original" + str(itr) + ".png")
-            curImg.save(filename)
+            filename = ("output/original" + str(itr) + ".jpg")
+            curImg.save(filename, "JPEG")
 
-            for sub_itr in range(1, 13):
+            for subItr in range(1, 13):
                 pool.apply_async(
-                worker, (curImg, hue, itr, sub_itr))
+                        worker, (curImg, hue, itr, subItr))
                 hue += 30
 
         pool.close()
@@ -74,5 +74,5 @@ def processImages():
 if __name__ == '__main__':        
         mp.set_start_method('spawn')
 
-        processImages()
+        process_images()
         

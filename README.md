@@ -10,10 +10,12 @@
 
 * ***Images must be JPG or PNG!***
 
+* PNG seems to work better as input(and output) due to transparency layer but outputs very large sized PNGs.
+
 * Works on both Linux and Windows!
 
 * *It will overwrite whatever is in output if run again, even with new input.*
 
 * It is set to use 4 processor cores to speed up the processing(since python only runs in 1 process normally)
 
-* It is *very* performance hungry, will max out CPU/RAM so use at your own risk. If you are worried about choking your system out, change the amount of processes in the pool to your CPU count -1. :)
+* It is *very* performance hungry, will max out CPU/RAM so use at your own risk. If you are worried about choking your system out, change the amount of processes in the pool to (your CPU count -1). :)

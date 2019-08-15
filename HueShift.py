@@ -46,7 +46,7 @@ def process_images():
 
     fileDir = os.getcwd()
     filename = os.path.join(fileDir, 'wallpapers')
-    pool = mp.Pool(processes=4)
+    pool = mp.Pool(processes=3)
     itr = 0
     hue = 30
     for root, dirs, files in os.walk(filename):
@@ -73,6 +73,8 @@ def process_images():
 
 if __name__ == '__main__':        
         mp.set_start_method('spawn')
-
-        process_images()
+        try:
+            process_images()
+        except:
+            print("Error processing images!")
         
